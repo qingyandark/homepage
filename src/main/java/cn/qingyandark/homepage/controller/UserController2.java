@@ -4,6 +4,8 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,10 +34,30 @@ public class UserController2 {
         return "user/add";
     }
 
+    /**
+     * 只有管理和超级管理员才可以获取用户列表，并获取数据
+     * 只有拥有 admin:getUserList 权限的用户才可以查看
+     * @param model
+     * @return user/list.html & data
+     */
+    @RequiresRoles({"管理员", "超级管理员"})
+    @RequestMapping("/user/list")
+    @RequiresPermissions("admin:getUserList")
+    public String toUserList(Model model){
+        model.addAttribute("msg", "del");
+        return "user/list";
+    }
+
     @RequestMapping("/user/del")
     public String toDel(Model model){
         model.addAttribute("msg", "del");
         return "user/del";
+    }
+
+    @RequestMapping("/toerror")
+    public String toError(Model model){
+        model.addAttribute("msg", "toerror");
+        return "error";
     }
 
     @RequestMapping("/loginCheck")

@@ -17,7 +17,6 @@ spring:
     # 配置获取连接等待超时的时间
     maxWait: 60000
 
-
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
