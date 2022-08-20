@@ -15,9 +15,6 @@ public class User {
     private Long id;
     private String username;
     private String password;
-    private String email;
-
-    public User(Long id){
-        this.id = id;
-    }
+    private String role;
+    private String perms;
 }

@@ -24,8 +24,8 @@ public class UserServiceImpl implements UserService {
         return mapper.update(user, lqw) > 0;
     }
 
-    public boolean deleteById(User user) {
-        return mapper.deleteById(user.getId()) > 0;
+    public boolean deleteById(Integer id) {
+        return mapper.deleteById(id) > 0;
     }
 
     public boolean getByNamePassword(User user){
@@ -34,11 +34,11 @@ public class UserServiceImpl implements UserService {
         return mapper.selectCount(lqw)>0;
     }
 
-    public User getById(User user) {
+    public User getById(Integer id) {
 //        LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<User>();
 //        lqw.eq(User::getId, user.getId());
 //        return mapper.selectById(user, lqw);
-        return mapper.selectById(user.getId());
+        return mapper.selectById(id);
     }
 
     public List<User> selectALL() {
@@ -47,5 +47,12 @@ public class UserServiceImpl implements UserService {
 
     public List<User> selectByIds(List<Integer> ids) {
         return mapper.selectBatchIds(ids);
+    }
+
+    @Override
+    public User getUserByUsername(String username) {
+        LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<User>();
+        lqw.eq(User::getUsername, username);
+        return mapper.selectOne(lqw);
     }
 }

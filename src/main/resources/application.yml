@@ -6,9 +6,21 @@ spring:
     username: root
     password: Mjb0926@mysql
 
+  # Druid数据源配置
+  druid:
+    # 初始连接数
+    initialSize: 5
+    # 最小连接池数量
+    minIdle: 10
+    # 最大连接池数量
+    maxActive: 20
+    # 配置获取连接等待超时的时间
+    maxWait: 60000
+
 
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
 server:
   port: 80

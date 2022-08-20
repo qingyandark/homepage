@@ -1,80 +1,77 @@
 package cn.qingyandark.homepage.shiro;
 
-import org.apache.shiro.realm.Realm;
+//import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
-import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
-import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
+import java.util.LinkedHashMap;
 
 @Configuration
 public class ShiroConfig {
-
-    /**
-     * 实例化ShiroFilterFactoryBean  拦截到所有的请求，根据请求的不同做不同的处理
-     *                         配置处理请求的各种方式，配置SecurityManager 等等
-     * @return
-     */
-    //ShiroFilter过滤所有请求
+    //创建ShiroFilterFactoryBean工厂对象 3
     @Bean
-    public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager){
-        //实例化ShiroFilterFactoryBean
-        ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
+    public ShiroFilterFactoryBean getShiroFilterFactoryBean(DefaultWebSecurityManager securityManager){
+        ShiroFilterFactoryBean bean = new ShiroFilterFactoryBean();
 
-        //依赖注入
-        shiroFilterFactoryBean.setSecurityManager(securityManager);
+        //配置SecurityManager
+        bean.setSecurityManager(securityManager);
 
-        // 配置系统受限资源
-        // 配置系统公共资源
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("/index.jsp","authc");//表示这个资源需要认证和授权
+        // shiro 内置过滤器
+        /*
+            anon: 无需认证
+            authc: 必须认证
+            user: 必须拥有记住我功能
+            perms：拥有对某个资源的权限
+            role：拥有某个角色全新啊
 
-        //所有功能放心  前后端分离认证拦截是基于session  每次请求的session不同
-        // 设置认证界面路径
-        shiroFilterFactoryBean.setLoginUrl("/login.jsp");
-        shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
+         */
+        LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
 
-        return shiroFilterFactoryBean;
+        // 授权，正常情况下，没有授权会跳转到为授权页面
+        map.put("/user/add", "perms[user:add]"); //拥有user:add权限
+        map.put("/user/del", "perms[user:del]"); //拥有user:del权限
+
+        // 开始拦截，某写资源访问必须认证
+
+//        map.put("/user/add", "authc"); //add页面所有人可以访问
+//        map.put("/user/del", "authc"); //add页面所有人可以访问
+        map.put("/user/*", "authc");
+
+//
+//        //所有功能放心  前后端分离认证拦截是基于session  每次请求的session不同
+//        // 设置认证界面路径
+
+        bean.setLoginUrl("/login"); //如果没有登录，跳转登陆页面
+        bean.setUnauthorizedUrl("/unauth"); // 如果没有授权
+
+
+        bean.setFilterChainDefinitionMap(map);
+
+        return bean;
     }
 
-    // 创建安全管理器
+    // 创建安全管理器 2
+//    public DefaultWebSecurityManager getDefaultWebSecurityManager(@Qualifier("userRealm") UserRealm userRealm) {
     @Bean
-    public DefaultWebSecurityManager getDefaultWebSecurityManager(Realm realm) {
+    public DefaultWebSecurityManager getDefaultWebSecurityManager(UserRealm userRealm) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-        securityManager.setRealm(realm);
+        securityManager.setRealm(userRealm);
         return securityManager;
     }
 
-    //创建自定义Realm
+    //创建自定义Realm 1
     @Bean
-    public Realm getRealm() {
-        UserRealm realm = new UserRealm();
-        return realm;
+    public UserRealm userRealm() {
+        return new UserRealm();
     }
 
 
-    @Bean
-    public ShiroFilterChainDefinition shiroFilterChainDefinition() {
-        DefaultShiroFilterChainDefinition chainDefinition = new DefaultShiroFilterChainDefinition();
-        chainDefinition.addPathDefinition("/login.html", "authc"); // need to accept POSTs from the login form
-        chainDefinition.addPathDefinition("/logout", "logout");
-        return chainDefinition;
-    }
+    // 以下为thymeleaf整合shiro
 
 //    @Bean
-//    public DefaultWebSecurityManager securityManager(){
-//        DefaultWebSecurityManager securityManager =new DefaultWebSecurityManager();
-//        ArrayList<Realm> realms = new ArrayList<>();
-//        realms.add(userRealm());   //UserRealm
-//        realms.add(memberRealm());   //MemberRealmx1
-//        //依赖注入Realm
-//        securityManager.setRealms(realms);
-//        return securityManager;
+//    public ShiroDialect getShiroDialect(){
+//        return new ShiroDialect();
 //    }
 }

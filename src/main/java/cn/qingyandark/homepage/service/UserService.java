@@ -9,13 +9,15 @@ public interface UserService {
 
     public boolean update(User user);
 
-    public boolean deleteById(User user);
+    public boolean deleteById(Integer id);
 
     public boolean getByNamePassword(User user);
 
-    public User getById(User user);
+    public User getById(Integer id);
 
     public List<User> selectALL();
 
     public List<User> selectByIds(List<Integer> ids);
+
+    public User getUserByUsername(String username);
 }
